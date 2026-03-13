@@ -3,9 +3,7 @@ package com.github.tnewman.concurrentslidingwindow;
 import java.util.concurrent.atomic.AtomicLongArray;
 import java.util.concurrent.atomic.LongAdder;
 
-/**
- * Implements a sliding window counter.
- */
+/** Implements a sliding window counter. */
 public class SlidingWindowCounter {
 
   private final int size;
@@ -38,9 +36,9 @@ public class SlidingWindowCounter {
 
   /**
    * Adds a number to the sliding window's counter in the current bucket.
-   * 
-   * This method is thread safe.
-   * 
+   *
+   * <p>This method is thread safe.
+   *
    * @param number The number to add.
    */
   public void add(final long number) {
@@ -51,8 +49,8 @@ public class SlidingWindowCounter {
   /**
    * Advance the sliding window, which removes the oldest bucket and advances the current bucket to
    * the next one, which will be empty.
-   * 
-   * This method is not thread safe.
+   *
+   * <p>This method is not thread safe.
    */
   public void advance() {
     final int c = current;
