@@ -23,7 +23,7 @@ import org.openjdk.jmh.annotations.Warmup;
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @Warmup(iterations = 5, time = 1)
-@Measurement(iterations = 5, time = 1)
+@Measurement(iterations = 5, time = 10, timeUnit = TimeUnit.SECONDS)
 @Fork(1)
 public class SlidingWindowCounterBenchmark {
 
@@ -49,13 +49,13 @@ public class SlidingWindowCounterBenchmark {
 
   @State(Scope.Group)
   public static class CombinedState {
-    final SlidingWindowCounter counter = new SlidingWindowCounter(WINDOW_SIZE);
+    final SlidingWindowCounter counter = new SlidingWindowCounter(60);
     private ScheduledExecutorService scheduler;
 
     @Setup(Level.Trial)
     public void setup() {
       scheduler = Executors.newSingleThreadScheduledExecutor();
-      scheduler.scheduleAtFixedRate(counter::advance, 1L, 1L, TimeUnit.SECONDS);
+      scheduler.scheduleAtFixedRate(counter::advance, 100L, 100L, TimeUnit.MILLISECONDS);
     }
 
     @TearDown(Level.Trial)
