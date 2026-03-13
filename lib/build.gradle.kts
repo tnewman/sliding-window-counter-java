@@ -8,6 +8,8 @@
 plugins {
     // Apply the java-library plugin for API and implementation separation.
     `java-library`
+    id("com.diffplug.spotless") version "8.3.0"
+
 }
 
 repositories {
@@ -32,6 +34,12 @@ dependencies {
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+spotless {
+    java {
+        googleJavaFormat()
     }
 }
 
