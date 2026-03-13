@@ -39,7 +39,6 @@ import java.util.concurrent.TimeUnit;
 
 public class TimedWindowExample {
     public static void main(String[] args) {
-        // Track 60 seconds
         SlidingWindowCounter counter = new SlidingWindowCounter(60);
 
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
