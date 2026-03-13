@@ -37,7 +37,8 @@ public class SlidingWindowCounter {
   /**
    * Adds a number to the sliding window's counter in the current bucket.
    *
-   * <p>This method is thread safe.
+   * <p>
+   * This method is thread safe.
    *
    * @param number The number to add.
    */
@@ -50,7 +51,8 @@ public class SlidingWindowCounter {
    * Advance the sliding window, which removes the oldest bucket and advances the current bucket to
    * the next one, which will be empty.
    *
-   * <p>This method is not thread safe.
+   * <p>
+   * This method is not thread safe.
    */
   public void advance() {
     final int c = current;
@@ -69,6 +71,14 @@ public class SlidingWindowCounter {
     current = next;
   }
 
+  /**
+   * Returns the accumulated sum within the sliding window.
+   * 
+   * This method is thread safe; however, the results will not be strongly consistent if other
+   * operations are performed concurrently while this method is called.
+   * 
+   * @return The accumulated sum.
+   */
   public long getAccumulator() {
     return accumulator.sum();
   }
