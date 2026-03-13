@@ -22,27 +22,27 @@ import org.openjdk.jmh.annotations.Warmup;
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
-@Warmup(iterations = 3, time = 1)
+@Warmup(iterations = 5, time = 1)
 @Measurement(iterations = 5, time = 1)
 @Fork(1)
-@Threads(Threads.MAX)
 public class SlidingWindowCounterBenchmark {
 
-  private static final int WINDOW_SIZE = 64;
-
-  private final SlidingWindowCounter counter = new SlidingWindowCounter(WINDOW_SIZE);
+  private final SlidingWindowCounter counter = new SlidingWindowCounter(60);
 
   @Benchmark
+  @Threads(Threads.MAX)
   public void benchmarkAdd() {
-    counter.add(1);
+    counter.add(1L);
   }
 
   @Benchmark
+  @Threads(Threads.MAX)
   public long benchmarkSum() {
     return counter.getAccumulator();
   }
 
   @Benchmark
+  @Threads(1) // Advance is not thread-safe
   public void benchmarkAdvance() {
     counter.advance();
   }
@@ -52,13 +52,13 @@ public class SlidingWindowCounterBenchmark {
     final SlidingWindowCounter counter = new SlidingWindowCounter(WINDOW_SIZE);
     private ScheduledExecutorService scheduler;
 
-    @Setup(Level.Iteration)
+    @Setup(Level.Trial)
     public void setup() {
       scheduler = Executors.newSingleThreadScheduledExecutor();
-      scheduler.scheduleAtFixedRate(counter::advance, 1, 1, TimeUnit.SECONDS);
+      scheduler.scheduleAtFixedRate(counter::advance, 1L, 1L, TimeUnit.SECONDS);
     }
 
-    @TearDown(Level.Iteration)
+    @TearDown(Level.Trial)
     public void tearDown() {
       if (scheduler != null) {
         scheduler.shutdownNow();
@@ -68,9 +68,9 @@ public class SlidingWindowCounterBenchmark {
 
   @Benchmark
   @Group("combined")
-  @GroupThreads(4)
+  @GroupThreads(3)
   public void combinedAdd(CombinedState state) {
-    state.counter.add(1);
+    state.counter.add(1L);
   }
 
   @Benchmark
