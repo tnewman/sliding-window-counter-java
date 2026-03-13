@@ -1,54 +1,77 @@
 package com.github.tnewman.concurrentslidingwindow;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicLongArray;
+import java.util.concurrent.atomic.LongAdder;
 
+/**
+ * Implements a sliding window counter.
+ */
 public class SlidingWindowCounter {
 
   private final int size;
 
-  private final AtomicBoolean filled;
+  private volatile boolean filled;
 
-  private final AtomicInteger current;
+  private volatile int current;
 
   private final AtomicLongArray ringBuffer;
 
-  private final AtomicLong accumulator;
+  private final LongAdder accumulator;
 
+  /**
+   * Creates a new SlidingWindowCounter with the specified size.
+   *
+   * @param size the number of buckets to maintain
+   */
   public SlidingWindowCounter(final int size) {
+    if (size <= 0) {
+      throw new IllegalArgumentException("Size must be greater than zero");
+    }
     this.size = size;
 
-    this.filled = new AtomicBoolean(false);
-
-    this.current = new AtomicInteger(0);
+    this.filled = false;
+    this.current = 0;
 
     this.ringBuffer = new AtomicLongArray(size);
-    this.accumulator = new AtomicLong(0);
+    this.accumulator = new LongAdder();
   }
 
+  /**
+   * Adds a number to the sliding window's counter in the current bucket.
+   * 
+   * This method is thread safe.
+   * 
+   * @param number The number to add.
+   */
   public void add(final long number) {
-    ringBuffer.addAndGet(current.get(), number);
-    accumulator.addAndGet(number);
+    ringBuffer.addAndGet(current, number);
+    accumulator.add(number);
   }
 
+  /**
+   * Advance the sliding window, which removes the oldest bucket and advances the current bucket to
+   * the next one, which will be empty.
+   * 
+   * This method is not thread safe.
+   */
   public void advance() {
-    final int next = (current.get() + 1) % size;
+    final int c = current;
+    int next = c + 1;
 
-    if (current.get() == size - 1) {
-      filled.set(true);
+    if (next >= size) {
+      next = 0;
+      filled = true;
     }
 
-    if (filled.get()) {
-      final long evicted = ringBuffer.getAndSet(next, 0);
-      accumulator.addAndGet(-evicted);
+    if (filled) {
+      final long evicted = ringBuffer.getAndSet(next, 0L);
+      accumulator.add(-evicted);
     }
 
-    current.set(next);
+    current = next;
   }
 
   public long getAccumulator() {
-    return accumulator.get();
+    return accumulator.sum();
   }
 }
