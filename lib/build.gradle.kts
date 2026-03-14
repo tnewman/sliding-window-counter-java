@@ -2,7 +2,6 @@ plugins {
     `java-library`
     jacoco
     alias(libs.plugins.spotless)
-    alias(libs.plugins.jmh)
     alias(libs.plugins.maven.publish)
 }
 
@@ -13,9 +12,6 @@ repositories {
 dependencies {
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly(libs.junit.platform.launcher)
-
-    jmh(libs.jmh.core)
-    jmhAnnotationProcessor(libs.jmh.annprocess)
 }
 
 java {
@@ -34,13 +30,6 @@ tasks.test {
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
-}
-
-jmh {
-    fork.set(1)
-    warmupIterations.set(3)
-    iterations.set(5)
-    benchmarkMode.set(listOf("thrpt"))
 }
 
 spotless {

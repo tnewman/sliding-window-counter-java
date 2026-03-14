@@ -11,4 +11,5 @@ plugins {
 }
 
 rootProject.name = "sliding-window-counter"
+include("benchmark")
 include("lib")
