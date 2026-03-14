@@ -54,7 +54,7 @@ val artifact: String by project
 val version: String by project
 
 mavenPublishing {
-  publishToMavenCentral()
+  publishToMavenCentral(automaticRelease = true)
   signAllPublications()
 
   coordinates(group, artifact, version)
