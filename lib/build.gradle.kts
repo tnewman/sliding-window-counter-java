@@ -1,5 +1,6 @@
 plugins {
     `java-library`
+    jacoco
     alias(libs.plugins.spotless)
     alias(libs.plugins.jmh)
     alias(libs.plugins.maven.publish)
@@ -25,6 +26,14 @@ java {
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
 }
 
 jmh {
