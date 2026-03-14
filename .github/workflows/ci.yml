@@ -61,5 +61,5 @@ jobs:
         if: github.event_name == 'release' && github.ref == 'refs/tags/*'
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-      - name: Publish Snapshot to Maven Central
-        run: ./gradlew publishToMavenCentral --no-configuration-cache -Pversion=${{ env.RELEASE_VERSION }}
+      - name: Publish to Maven Central
+        run: ./gradlew publishToMavenCentral --no-configuration-cache "-Pversion=${RELEASE_VERSION}"
