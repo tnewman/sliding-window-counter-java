@@ -31,3 +31,6 @@ build
 
 # Ignore Kotlin plugin data
 .kotlin
+
+# Gradle Wrapper should be committed
+!/gradle/wrapper/gradle-wrapper.jar
